@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  // GitHub Pages 子路径部署（https://<user>.github.io/2050-TRPG/）
+  base: '/2050-TRPG/',
   title: "2050 TRPG",
   description: "Dual-Rank Framework",
   themeConfig: {
