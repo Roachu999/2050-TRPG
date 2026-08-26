@@ -1,0 +1,14 @@
+# 统一换行符，避免跨平台（Windows/Linux/macOS）差异
+* text=auto
+
+# 二进制文件
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

@@ -1,0 +1,22 @@
+# 依赖
+node_modules
+
+# 构建产物
+docs/.vitepress/dist
+docs/.vitepress/cache
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
+
+# Office 草稿文档（避免误提交被外部程序锁定的源文件）
+*.doc
+*.docx
+*.pub
+*.xls
+*.xlsx
+*.ppt
+*.pptx
