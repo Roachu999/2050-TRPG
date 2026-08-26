@@ -1,4 +1,4 @@
-# 猫头猫头猫 的 TRPG 规则不全书 <Badge type="tip" text="v0.1.0-alpha" />
+# 猫头猫头猫 的 TRPG 规则不全书 <Badge type="tip" text="v0.1.0-alpha" /> <Badge type="warning" text="WIP" />
 
 本书中标记为 <Badge type="warning" text="WIP" /> 的资源表示该内容仍在构建与数值测试中（别问为什么都是<Badge type="warning" text="WIP" />）。
 

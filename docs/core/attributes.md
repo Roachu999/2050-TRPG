@@ -14,7 +14,7 @@ title: 属性
 .attr-cha { color: #c05fd4; font-weight: bold; }
 </style>
 
-# 属性
+# 属性 <Badge type="warning" text="WIP" />
 
 核心属性为三项，在建立人物时从三个核心选项的子选项里各选择一个作为你的主属性。未选择的那项则作为副属性。副属性在检定时，数值为主属性的一半，且向下取整。
 
