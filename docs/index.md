@@ -7,7 +7,8 @@
 ### 关于本规则 <Badge type="warning" text="WIP" />
 本规则是主包游玩TRPG后突发奇想设计的个人TRPG规则。
 主打重RP，轻规则，BD构筑等内容。
-总体风格为都市奇幻，PC在一个巨大的都市里生活与冒险，稍显轻喜剧的规则。
+总体风格为都市奇幻，PC在一个巨大的都市里生活与冒险，稍显轻喜剧的规则。  
+当然推荐先看看能不能跑起来（）
 ---
 
 ### 快速检索跳转 <Badge type="warning" text="WIP" />
@@ -32,4 +33,4 @@
 3. **蒙特卡洛数值验证**：数值都没有就蒙特卡洛？
 ---
 
-**项目 GitHub 仓库**：[点击前往仓库提交 Issue 或 PR](https://github.com/Roachu999/2050-TRPG)
+**项目 GitHub 仓库**：[点击前往仓库提交 Issue 或 反馈](https://github.com/Roachu999/2050-TRPG)
