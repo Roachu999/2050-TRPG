@@ -20,7 +20,7 @@ export default defineConfig({
         text: '📖 核心系统',
         collapsed: false, // 是否允许折叠
         items: [
-          { text: '规则（早起测试）', link: '/core/rules' },
+          { text: '规则 (早期测试)', link: '/core/rules' },
           { text: '影响度与破坏力', link: '/core/influence' },
           { text: '动作系统', link: '/core/actions' },
           {
@@ -46,7 +46,7 @@ export default defineConfig({
           { text: '精灵 (Animism)', link: '/characters/animism' },
           { text: '半神 (Demigod)', link: '/characters/demigod' },
           { text: '人形 (Android)', link: '/characters/android' },
-          { text: '第二类恶魔 (Demon)', link: '/characters/demon' },
+          { text: '第二类恶魔 (Type-II Demon)', link: '/characters/demon' },
           { text: '种族与亚种', link: '/characters/ancestries' }
         ]
       },
@@ -55,7 +55,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: '英雄 (Lv 1-5)', link: '/classes/hero' },
-          { text: '格斗家(Lv 1-5)', link: '/classes/fighter' },
+          { text: '格斗家 (Lv 1-5)', link: '/classes/fighter' },
           { text: '灵修士 (Occultist)', link: '/classes/occultist' },
           {
             text: '施法者 (Casters)',
@@ -67,7 +67,7 @@ export default defineConfig({
               { text: '现实扭曲者 (Reality Warper)', link: '/classes/reality-warper' }
             ]
           },
-          { text: '占位符[施工中]', link: '/classes/roadmap' }
+          { text: '特殊职业规划 [WIP]', link: '/classes/roadmap' }
         ]
       },
       {

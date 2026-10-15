@@ -1,8 +1,8 @@
 ---
-title: 规则（早起测试）
+title: 规则 (早期测试)
 ---
 
-# **规则（早起测试）** <Badge type="warning" text="WIP" />
+# **规则 (早期测试)** <Badge type="warning" text="WIP" />
 
 ## 关于骰子
 

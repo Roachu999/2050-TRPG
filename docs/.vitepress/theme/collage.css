@@ -1,0 +1,1026 @@
+/* ==========================================================================
+   2050-TRPG 首页 / 乳白亚克力自由拼贴版式 (Acrylic Collage Home)
+   --------------------------------------------------------------------------
+   作用域说明：所有规则均挂在首页根容器 .collage-root 之下（或使用自有类名），
+   因此不会影响 docs/ 下其它文档页的默认主题排版。
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 核心色彩与材质变量 (白 / 信号橙 / 碳黑 + 乳白亚克力光学参数)
+   ========================================================================== */
+.collage-root {
+  --bg-canvas: #F3F2EE;          /* 工业暖白底布 (留出 #FFF 给亚克力高光边缘) */
+  --ink-black: #121211;          /* 结构碳黑 */
+  --ink-muted: #686763;          /* 辅助灰黑 */
+  --signal-orange: #FF4400;      /* 国际信号橙 (核心交互与视觉锚点) */
+  --accent-cyan: #00C2A8;        /* 2% 极少点缀冷色：战术终端青 */
+
+  /* 乳白亚克力材质参数 (默认 84% 乳白微透，重点强化边缘折射与立体倒角) */
+  --acrylic-opacity: 0.84;
+  --acrylic-blur: 16px;
+  --acrylic-bg: rgba(255, 255, 255, var(--acrylic-opacity));
+  --acrylic-border-outer: rgba(18, 18, 17, 0.15);
+  --acrylic-edge-highlight: inset 0 2px 0 0 #FFFFFF,
+                            inset 2px 0 0 0 rgba(255, 255, 255, 0.92),
+                            inset -1px -1px 0 0 rgba(18, 18, 17, 0.07);
+  --acrylic-shadow-rest: 0 12px 28px -8px rgba(18, 18, 17, 0.08),
+                         0 4px 10px -2px rgba(18, 18, 17, 0.05);
+  --acrylic-shadow-drag: 0 28px 54px -10px rgba(18, 18, 17, 0.20),
+                         0 10px 22px -4px rgba(255, 68, 0, 0.12);
+
+  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-serif: "Georgia", "Songti SC", "Noto Serif SC", serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
+
+  /* 画布本体（原先挂在 body 上，这里收拢到首页容器） */
+  position: relative;
+  background-color: var(--bg-canvas);
+  color: var(--ink-black);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.collage-root *,
+.collage-root *::before,
+.collage-root *::after {
+  box-sizing: border-box;
+}
+
+.collage-root ::selection {
+  background: var(--signal-orange);
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   2. 底层固定背景：高对比等高线 + 极简雷达环 + 3组通信数据流
+   ========================================================================== */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 基础 64px 极细战术坐标网格 */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(18, 18, 17, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(18, 18, 17, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.bg-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 雷达扫描线慢速旋转 */
+.radar-sweep {
+  transform-origin: 76% 46%;
+  animation: radarRotate 18s linear infinite;
+}
+
+@keyframes radarRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 3组克制的通信编码数据流 */
+.telemetry-stream {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.65;
+  letter-spacing: 0.06em;
+  color: var(--ink-black);
+  opacity: 0.65;
+  user-select: none;
+}
+
+.telemetry-stream .tag-orange {
+  background: var(--signal-orange);
+  color: #fff;
+  padding: 1px 5px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.telemetry-stream .tag-black {
+  background: var(--ink-black);
+  color: #fff;
+  padding: 1px 5px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.stream-1 { top: 88px; left: 36px; }
+.stream-2 { bottom: 36px; left: 36px; }
+.stream-3 { bottom: 36px; right: 36px; text-align: right; }
+
+/* ==========================================================================
+   3. 仿 VitePress 顶部导航栏 + 左右滑动胶囊开关 (VPSwitch 未来感定制版)
+   ========================================================================== */
+.vp-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(18, 18, 17, 0.12);
+  box-shadow: inset 0 -1px 0 0 #FFFFFF, 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.vp-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  background: var(--ink-black);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 0.08em;
+  position: relative;
+}
+
+.brand-badge::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--signal-orange);
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink-black);
+}
+
+.vp-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.vp-nav-links {
+  display: flex;
+  gap: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.vp-nav-links a {
+  color: var(--ink-black);
+  text-decoration: none;
+  position: relative;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+
+.vp-nav-links a:hover {
+  color: var(--signal-orange);
+}
+
+/* 控制台外框：仿 VitePress 明暗切换胶囊开关 */
+.workbench-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 18px;
+  border-left: 1px solid rgba(18, 18, 17, 0.14);
+}
+
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--ink-black);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+
+.switch-label span.mode-sub {
+  font-size: 9px;
+  color: var(--signal-orange);
+  font-weight: 600;
+}
+
+/* 核心：左右滑动的未来感胶囊按钮 (仿 VPSwitch 尺寸与结构，升级机能细节) */
+.vp-cyber-switch {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  border-radius: 999px;
+  background: #E5E4DF;
+  border: 1px solid rgba(18, 18, 17, 0.22);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08), 0 1px 0 #FFFFFF;
+  cursor: pointer;
+  transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 7px;
+  overflow: hidden;
+}
+
+/* 槽内底纹刻度 */
+.vp-cyber-switch .track-icon {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  z-index: 1;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.vp-cyber-switch .icon-grid {
+  color: var(--ink-muted);
+  opacity: 0.8;
+}
+
+.vp-cyber-switch .icon-collage {
+  color: #FFFFFF;
+  opacity: 0;
+}
+
+/* 滑块本体 (Thumb) */
+.vp-cyber-switch .switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink-black);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28),
+              inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  transition: transform 0.34s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.25s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 滑块中心发光微点 */
+.vp-cyber-switch .switch-thumb::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal-orange);
+  box-shadow: 0 0 6px var(--signal-orange);
+  transition: background-color 0.25s, transform 0.25s;
+}
+
+/* 激活状态 (自由拼贴模式 ON -> 滑块滑向右侧) */
+.vp-cyber-switch[aria-checked="true"] {
+  background: var(--ink-black);
+  border-color: var(--ink-black);
+}
+
+.vp-cyber-switch[aria-checked="true"] .switch-thumb {
+  transform: translateX(28px);
+  background: var(--signal-orange);
+}
+
+.vp-cyber-switch[aria-checked="true"] .switch-thumb::after {
+  background: #FFFFFF;
+  box-shadow: 0 0 8px #FFFFFF;
+}
+
+.vp-cyber-switch[aria-checked="true"] .icon-grid {
+  opacity: 0;
+}
+
+.vp-cyber-switch[aria-checked="true"] .icon-collage {
+  opacity: 0.9;
+}
+
+/* 一键复位按钮 */
+.btn-reset {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 4px;
+  border: 1px solid var(--ink-black);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink-black);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  box-shadow: 2px 2px 0 var(--ink-black);
+}
+
+.btn-reset:hover {
+  background: var(--signal-orange);
+  color: #FFFFFF;
+  border-color: var(--ink-black);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink-black);
+}
+
+.btn-reset:active {
+  transform: translate(1px, 1px);
+  box-shadow: 0 0 0 var(--ink-black);
+}
+
+/* ==========================================================================
+   4. 主舞台与乳白亚克力拼贴卡片系统 (Milky Acrylic Cards)
+   ========================================================================== */
+/* 主区域：左侧折叠目录侧边栏 + 右侧卡片舞台 */
+.stage-shell {
+  position: relative;
+  z-index: 10;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 36px 32px 90px;
+  display: grid;
+  grid-template-columns: 288px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.stage-container {
+  position: relative;
+  z-index: 10;
+  min-width: 0;
+}
+
+/* 顶部构成主义状态横幅 */
+.stage-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--ink-black);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-cyan);
+  display: inline-block;
+}
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink-muted);
+}
+
+/* 拼贴画布：支持 GRID (规整对齐，默认) 与 COLLAGE (错位重叠+自由拖拽) 两种状态
+   align-items: stretch 让同一行卡片等高，构成整齐的板块栅格 */
+.collage-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* --------------------------------------------------------------------------
+   乳白亚克力核心材质样式 (.acrylic-card)
+   -------------------------------------------------------------------------- */
+.acrylic-card {
+  position: relative;
+  background: var(--acrylic-bg);
+  backdrop-filter: blur(var(--acrylic-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--acrylic-blur)) saturate(150%);
+  border: 1px solid var(--acrylic-border-outer);
+  box-shadow: var(--acrylic-edge-highlight), var(--acrylic-shadow-rest);
+  border-radius: 3px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+  will-change: transform;
+  user-select: none;
+}
+
+/* 亚克力表面细微噪点层 + 顶部反光斜切 */
+.acrylic-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.08) 42%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  border-radius: inherit;
+  z-index: 0;
+}
+
+/* 强调边缘：四角构成主义微刻度靶标 */
+.acrylic-card .corner-mark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-color: var(--ink-black);
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+.corner-tl { top: 4px; left: 4px; border-top: 1.5px solid; border-left: 1.5px solid; }
+.corner-tr { top: 4px; right: 4px; border-top: 1.5px solid; border-right: 1.5px solid; }
+.corner-bl { bottom: 4px; left: 4px; border-bottom: 1.5px solid; border-left: 1.5px solid; }
+.corner-br { bottom: 4px; right: 4px; border-bottom: 1.5px solid; border-right: 1.5px solid; }
+
+.acrylic-card:hover {
+  border-color: rgba(18, 18, 17, 0.38);
+}
+
+.acrylic-card:hover .corner-mark {
+  opacity: 1;
+  border-color: var(--signal-orange);
+}
+
+/* 拖拽激活中：禁用平滑过渡以保证跟手，加深悬空阴影 */
+.acrylic-card.is-dragging {
+  transition: box-shadow 0.15s ease !important;
+  box-shadow: var(--acrylic-edge-highlight), var(--acrylic-shadow-drag) !important;
+  border-color: var(--signal-orange) !important;
+  cursor: grabbing !important;
+}
+
+/* 卡片顶部拖拽抓手栏 (HUD Header) */
+.card-drag-bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(18, 18, 17, 0.10);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.collage-board.is-collage-mode .acrylic-card {
+  cursor: grab;
+}
+
+.collage-board.is-grid-mode .acrylic-card {
+  cursor: default;
+  transform: translate3d(0px, 0px, 0px) rotate(0deg) !important;
+}
+
+.card-index-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--ink-black);
+}
+
+.card-index-tag .num-box {
+  background: var(--ink-black);
+  color: #FFFFFF;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+.card-index-tag .num-box.orange {
+  background: var(--signal-orange);
+}
+
+/* 散热孔点阵 + 实时坐标显示 */
+.card-coords {
+  font-size: 10px;
+  color: var(--ink-muted);
+  background: rgba(18, 18, 17, 0.05);
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+
+/* 卡片内容区 */
+.card-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* 整齐排列：同排卡片等高，收尾元素统一压在卡片底部形成对齐下缘 */
+.card-hero .hero-actions,
+.card-index .placeholder-list,
+.card-feature .card-footer-meta {
+  margin-top: auto;
+}
+
+/* 构成主义橙色胶带装饰 (仅部分卡片点缀) */
+.orange-tape {
+  position: absolute;
+  top: -10px;
+  right: 28px;
+  width: 76px;
+  height: 20px;
+  background: rgba(255, 68, 0, 0.85);
+  backdrop-filter: blur(4px);
+  transform: rotate(2.5deg);
+  box-shadow: 0 2px 6px rgba(255, 68, 0, 0.25);
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+/* 黑橙警戒斜纹装饰条 */
+.hazard-strip {
+  height: 6px;
+  width: 100%;
+  margin: 14px 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--ink-black),
+    var(--ink-black) 6px,
+    var(--signal-orange) 6px,
+    var(--signal-orange) 12px
+  );
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   各张卡片的网格跨度与排版样式
+   -------------------------------------------------------------------------- */
+/* 卡片 01：主视觉 Hero 卡 (占 7 列) */
+.card-hero {
+  grid-column: span 7;
+  padding: 32px;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--signal-orange);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+/* Cyber-Renaissance 点缀：古典斜体衬线副标题 */
+.hero-serif-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink-muted);
+  margin-bottom: 18px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #2C2C2A;
+  margin-bottom: 24px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.vp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink-black);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border: 1px solid var(--ink-black);
+  box-shadow: 3px 3px 0 var(--signal-orange);
+  transition: all 0.2s;
+}
+
+.vp-btn-primary:hover {
+  background: var(--signal-orange);
+  border-color: var(--signal-orange);
+  box-shadow: 3px 3px 0 var(--ink-black);
+}
+
+.vp-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink-black);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border: 1px solid var(--ink-black);
+  transition: all 0.2s;
+}
+
+.vp-btn-secondary:hover {
+  background: var(--ink-black);
+  color: #FFFFFF;
+}
+
+/* 卡片 02：右上角档案状态/目录索引卡 (占 5 列) */
+.card-index {
+  grid-column: span 5;
+}
+
+/* 卡片 03 / 04 / 05：三张核心设定/规则入口卡 (各占 4 列) */
+.card-feature {
+  grid-column: span 4;
+}
+
+/* 卡片 06：底部横跨日志/附加模块 + 亚克力浓度微调器 (占 12 列) */
+.card-footer-dock {
+  grid-column: span 12;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.placeholder-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--ink-black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.placeholder-text {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #3A3937;
+  margin-bottom: 16px;
+}
+
+.placeholder-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 0;
+  border-top: 1px dashed rgba(18, 18, 17, 0.18);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.placeholder-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(18, 18, 17, 0.10);
+}
+
+.placeholder-list li a {
+  color: var(--ink-black);
+  text-decoration: none;
+}
+
+.placeholder-list li a:hover {
+  color: var(--signal-orange);
+}
+
+.placeholder-list li span.arrow {
+  color: var(--signal-orange);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.card-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  padding-top: 10px;
+  border-top: 1px solid rgba(18, 18, 17, 0.08);
+}
+
+.card-link {
+  color: var(--signal-orange);
+  text-decoration: none;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+}
+
+/* 底部实时调整乳白亚克力透明度的微调器 */
+.acrylic-tuner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(18, 18, 17, 0.05);
+  padding: 8px 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(18, 18, 17, 0.12);
+}
+
+.acrylic-tuner input[type="range"] {
+  accent-color: var(--signal-orange);
+  cursor: pointer;
+  width: 110px;
+}
+
+/* 底部备注栏里的仓库链接 */
+.footer-repo-link {
+  color: var(--signal-orange);
+  font-weight: 700;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.footer-repo-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   5. 左侧折叠目录侧边栏 (Acrylic Folding Index)
+   ========================================================================== */
+.index-sidebar {
+  align-self: start;
+  position: sticky;
+  top: 88px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 16px 22px;
+}
+
+.index-sidebar::-webkit-scrollbar { width: 8px; }
+.index-sidebar::-webkit-scrollbar-track { background: transparent; }
+.index-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(18, 18, 17, 0.16);
+  border-radius: 4px;
+}
+.index-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 68, 0, 0.45); }
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid var(--ink-black);
+}
+
+.sidebar-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-black);
+}
+
+.sidebar-mini-btn {
+  border: 1px solid rgba(18, 18, 17, 0.28);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar-mini-btn:hover {
+  color: #FFFFFF;
+  background: var(--signal-orange);
+  border-color: var(--ink-black);
+}
+
+.sidebar-nav {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.sidebar-list,
+.sidebar-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-list > li + li { margin-top: 2px; }
+
+/* 顶层单项（引言 / 真相 / 开发日志） */
+.sidebar-link-top {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 分组标题按钮 */
+.sidebar-group + .sidebar-group { margin-top: 8px; }
+
+.sidebar-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 8px;
+  border: 0;
+  border-top: 1px dashed rgba(18, 18, 17, 0.14);
+  background: transparent;
+  color: var(--ink-black);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.sidebar-group-head:hover {
+  color: var(--signal-orange);
+  background: rgba(255, 68, 0, 0.05);
+}
+
+.sidebar-group-text { flex: 1; }
+
+/* 折叠箭头 */
+.chev {
+  display: inline-block;
+  width: 10px;
+  font-size: 10px;
+  color: var(--ink-muted);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s;
+}
+
+.chev.open {
+  transform: rotate(90deg);
+  color: var(--signal-orange);
+}
+
+/* 折叠容器：grid-template-rows 0fr → 1fr 的平滑展开 */
+.sidebar-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-collapse.open { grid-template-rows: 1fr; }
+
+.sidebar-collapse-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 条目链接 */
+.sidebar-link {
+  display: block;
+  padding: 5px 8px 5px 14px;
+  color: var(--ink-black);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  line-height: 1.45;
+  transition: color 0.18s, border-color 0.18s, background-color 0.18s, padding-left 0.18s;
+}
+
+.sidebar-link:hover {
+  color: var(--signal-orange);
+  border-left-color: var(--signal-orange);
+  background: rgba(255, 68, 0, 0.06);
+  padding-left: 17px;
+}
+
+.sidebar-sublist { padding-left: 6px; }
+.sidebar-sublist-2 { padding-left: 12px; }
+
+/* 嵌套分组（绝技 / 施法者）：链接与折叠按钮同行 */
+.sidebar-nested-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-nested-row .sidebar-link { flex: 1; }
+
+.chev-btn {
+  border: 0;
+  background: transparent;
+  padding: 4px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.chev-btn:hover { background: rgba(18, 18, 17, 0.06); }
+
+/* ==========================================================================
+   6. 响应式：窄屏时侧边栏转为普通块级排列，卡片回退为单列
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .stage-shell {
+    grid-template-columns: 236px minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 960px) {
+  .stage-shell {
+    grid-template-columns: 1fr;
+    padding: 24px 18px 70px;
+  }
+  .index-sidebar {
+    position: static;
+    max-height: none;
+  }
+  .card-hero, .card-index, .card-feature, .card-footer-dock {
+    grid-column: span 12;
+  }
+  .vp-nav-links {
+    display: none;
+  }
+}
